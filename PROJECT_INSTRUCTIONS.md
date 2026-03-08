@@ -40,7 +40,12 @@
     fprime-util generate
     ```
 
-7. Run the build command 
+7. Run script
+    ```sh
+    ./fix.sh
+    ```
+
+8. Run the build command 
     ```sh
     fprime-util build
     ```
