@@ -73,7 +73,7 @@ Note: The function signature changed in the current fprime-arduino; it no longer
 
 **Problem:** The STM32 Arduino core expects a `variant.h` header, but the Nucleo H723ZG variant uses `variant_NUCLEO_H723ZG.h`. When arduino-cli compiles the sketch during `fprime-util generate`, it can't resolve `variant.h` to the correct board-specific header. Additionally, the sketch directory needs a `build.opt` file to inject custom include paths into the arduino-cli build.
 
-**Purpose:** Run this script **before** `fprime-util generate` whenever the build directory is clean/deleted.
+**Purpose:** Run this script **after** `fprime-util generate` whenever the build directory is clean/deleted.
 
 **What it does:**
 
