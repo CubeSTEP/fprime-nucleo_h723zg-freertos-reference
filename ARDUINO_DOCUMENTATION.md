@@ -12,7 +12,7 @@ project_root: .
 library_locations: ./lib/fprime-featherm4-freertos:./lib/fprime-featherm4-freertos/fprime-arduino:./lib/fprime-featherm4-freertos/fprime-freertos
 default_toolchain: FeatherM4_FreeRTOS
 ```
-- library_locations provides the path to multiple submodules. In the root of each of these submodules, there are cmake files. It seems that providing the paths to library_locations signals fprime to run cmake files at the root of each of these paths. This should be fact checked to make sure library_locations provides this functionality. The cmake files in fprime-featherm4-freertos and fprime-arduino interacts with arduino. Further information on these cmake files are mentioned in the appropriate sections
+- library_locations provides the path to multiple submodules. In the root of each of these submodules, there are cmake files. Providing the paths to library_locations signals fprime to run cmake files at the root of each of these paths. This should be fact checked to make sure library_locations provides this functionality. The cmake files in fprime-featherm4-freertos and fprime-arduino interacts with arduino. Further information on these cmake files are mentioned in the appropriate sections
 - default_toolchain targets fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake as the toolchain file to run which interacts with arduino. Further information on these cmake files are mentioned in the appropriate sections
 
 ### /fprime-nucleo_h723zg-freertos-reference/CMakeLists.txt
@@ -21,14 +21,17 @@ include("${CMAKE_CURRENT_LIST_DIR}/project.cmake")
 ```
 - Runs project.cmake
 
-### /fprime-nucleo_h723zg-freertos-reference/ReferenceDeployment
+### /fprime-nucleo_h723zg-freertos-reference/project.cmake
 ```sh
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/ReferenceDeployment/")
 ```
-- Runs the cmake file located at the root of ReferenceDeployment
+- Runs the cmake file /fprime-nucleo_h723zg-freertos-reference/ReferenceDeployment/CMakeLists.txt
 
 ### /fprime-nucleo_h723zg-freertos-reference/ReferenceDeployment/CMakeLists.txt
-- Runs finalize_arduino_executable() which seems to provide the arduino API functions for programming in an arduino way
+```sh
+finalize_arduino_executable()
+```
+- Runs this arduino cmake function which seems to provide the arduino API functions for programming in an arduino way
 
 ### /fprime-nucleo_h723zg-freertos-reference/ReferenceDeployment/Main.cpp
 ```sh
@@ -65,14 +68,14 @@ include_directories(
     ${ARDUINO_STM32_LIB_PATH}/libraries/SPI/src
 )
 ```
-- Globally includes path to the header files for arduino libraries
+- Globally includes path to the header files for arduino libraries. This means throughout any part of the project after this function is ran, if a file needs to include functions from a header file within any of these directories, only the path relative to the paths provided in include_directories is needed in the #include line
 
 
 ### /fprime-featherm4-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake
 ```sh
 set(ARDUINO_FQBN "STMicroelectronics:stm32:Nucleo_144:pnum=NUCLEO_H723ZG,upload_method=swdMethod")
 ```
-- Defines what board to run in stm32duino. This select the nucleo_h723zg board. First stored in a variable to be later used to tell stm32duino to select the board configurations for nucleo_h723zg which is already provided in stm32duino
+- Defines what board is being used in stm32duino. This select the nucleo_h723zg board. First stored in a variable ARDUINO_FQBN to be later used in an arduino cmake function called arduino_set_build_settings() to tell stm32duino to select the board configurations for nucleo_h723zg.
 
 ```sh
 add_compile_options(
@@ -81,19 +84,19 @@ add_compile_options(
     -DUSE_BASIC_TIMER
 )
 ```
-- D_BOARD_NUCLEO_H723ZG: Defines a macro but not sure what for yet. This might require more research if this is important
-- DVARIANT_H: This line most ikely selects the specific board description file provided in stm32duino. This is that file: https://github.com/stm32duino/Arduino_Core_STM32/blob/main/variants/STM32H7xx/H723Z(E-G)T_H730ZBT_H733ZGT/variant_NUCLEO_H723ZG.h
+- D_BOARD_NUCLEO_H723ZG: Defines a macro. Does not seemed to be used anywhere. Removing the define option for this macro does not break the build, so we might be able to ignore it.
+- DVARIANT_H: This line selects the specific board description file provided in stm32duino. This is that file: https://github.com/stm32duino/Arduino_Core_STM32/blob/main/variants/STM32H7xx/H723Z(E-G)T_H730ZBT_H733ZGT/variant_NUCLEO_H723ZG.h
 
 ```sh
 set(FPRIME_PLATFORM "FeatherM4_FreeRTOS")
 ```
-- This seems to target fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake as the target platform
+- This targets fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake as the target platform
 
 ```sh
 set(ARDUINO_SUPPORT_DIR "${CMAKE_CURRENT_LIST_DIR}/../../fprime-arduino/cmake/toolchain/support")
 include("${ARDUINO_SUPPORT_DIR}/arduino-support.cmake")
 ```
-- Targets a cmake file that provides a list of arduino cmake functions and runs build configurations. More information on this file will be provided in its section
+- Targets a cmake file that provides a list of arduino cmake functions and provides build flags specific to our board. More information on this file will be provided in its section
 
 ```sh
 target_use_arduino_libraries("STM32FreeRTOS")
@@ -120,7 +123,7 @@ endif()
 
 add_fprime_subdirectory("${ARDUINO_TYPES_DIR}")
 ```
-- ARDUINO_FBQN is defined and CMAKE_SYSTEM_PROCESSOR is set to "arm" so the elseif branch runs which targets fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/platform/arm/Platform. The cmake file at the root of this path is ran
+- Both ARDUINO_FQBN is intialized and CMAKE_SYSTEM_PROCESSOR is set to "arm" in /fprime-featherm4-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake so the elseif branch runs which targets fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/platform/arm/Platform. The cmake file at the root of this path is run
 
 ```sh
 set(FPRIME_PLATFORM "ArduinoFw")
@@ -157,7 +160,9 @@ register_fprime_config(
     INTERFACE # No buildable files generated
 )
 ```
-- Choses implementations for Os_Console_Arduino and Os_RawTime_Arduino. They might be implementation stubs as no where in the project are these defined
+- Chooses implementations for Os_Console_Arduino and Os_RawTime_Arduino. 
+- OS_Console_Arduino: Provides basic stub implementation for console interaction, such as printing messages
+- OS_RawTime_Arduino: Provides features for time, such as retrieving the current time and calculating time intervals
 
 ## From the root of fprime-arduino
 
@@ -179,7 +184,9 @@ add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Arduino/Svc/LifeLed")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Arduino/Svc/ArduinoTime")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Arduino/Svc/Ports")
 ```
-- Targets the cmake file present at the root of each path. Our current fprime project so far only uses Arduino/Drv/StreamDrive, Arduino/Svc/ArduinoTime, and Arduino/Drv/HardwareRateDriver. These components are used in /fprime-nucleo_h723zg-freertos-reference/ReferenceDeployment/Top/instances.fpp and are created as passive components.
+- Targets the cmake file present at the root of each path. 
+- Our current fprime project uses Arduino/Drv/StreamDrive, Arduino/Svc/ArduinoTime, and Arduino/Drv/HardwareRateDriver. These components are used in /fprime-nucleo_h723zg-freertos-reference/ReferenceDeployment/Top/instances.fpp and are created as passive components.
+- Our fprime project also uses /Arduino/OS to provide the arduino implementations OS_Console_Arduino and OS_RawTime_Arduino in fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/platform/arm/Platform/CMakeLists.txt
 
 ### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/platform/ArduinoFw.cmake
 ```sh
@@ -192,7 +199,7 @@ else()
 endif()
 add_fprime_subdirectory("${ARDUINO_TYPES_DIR}")
 ```
-- ARDUINO_FBQN is defined and CMAKE_SYSTEM_PROCESSOR is set to "arm" so the elseif branch runs which targets fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/platform/arm/Platform. The cmake file at the root of this path is ran
+- ARDUINO_FQBN is defined and CMAKE_SYSTEM_PROCESSOR is set to "arm" so the elseif branch runs which targets fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/platform/arm/Platform. The cmake file at the root of this path is run
 
 ### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/platform/arm/Platform/CMakeLists.txt
 ```sh
@@ -214,16 +221,26 @@ register_fprime_config(
     INTERFACE # No buildable files generated
 )
 ```
-- Choses implementations for Os_Console_Arduino and Os_RawTime_Arduino. They might be implementation stubs as no where in the project are these defined
+- Chooses implementations for Os_Console_Arduino and Os_RawTime_Arduino. Refer to fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/platform/arm/Platform/CMakeLists.txt for a brief description of these implementations
 
 ### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/toolchain/support/arduino-support.cmake
-- Provides a list of arduino cmake functions
-- Runs set_arduino_build_settings which determines the settings/flags for the compiler and linker
-- Need to research this more
+- This cmake file provides a list of arduino cmake functions
+```sh
+set_arduino_build_settings()
+```
+- This function is run which determines the settings/flags for the compiler and linker
+- Uses ARDUINO_FQBN set in /fprime-featherm4-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake to retrieve board build configurations specific to nucle_h723zg and make it available to the entire cmake build system
+- This is likely the function that retrieves all of the compiler flags provided from stm32duino in order to use them in the fprime project
+
 ```sh
 include("${CMAKE_CURRENT_LIST_DIR}/arduino-wrapper.cmake")
 ```
-- Targets a cmake file to provide  more arduino cmake functions
+- Targets a cmake file to provide more arduino cmake functions
 
 ### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/toolchain/support/arduino-wrapper.cmake
 - Provides a list of arduino cmake functions
+
+## Additional Files
+### fprime-nucleo_h723zg-freertos-reference/build-fprime-automatic-FeatherM4_FreeRTOS/build.ninja
+- Seems to contain every compiler flag declared throughout the fprime project and stm32duino
+
