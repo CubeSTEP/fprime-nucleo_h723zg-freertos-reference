@@ -1,9 +1,10 @@
 # Arduino Documentation
 
 ## Arduino build hierarchy
-![arduino hierarchy graph](assets/Arduino_Build_Hierarchy.png)
-- Blue arrows mean that its possible that the file targets another file. For these arrows I was not 100% sure.
-- Black arrows mean that its definite that the file targets another file
+### Build Hierarchy Excluding Files Targetted by fprime-arduino.cmake
+![general build hierarchy](assets/General_Build_Hierarchy.png)
+### Build Hierarchy for Files Targetted by fprime-arduino.cmake
+![fprime-arduino.cmake build hierarchy](assets/fprime-arduino.cmake_Build_Hierarchy.png)
 
 ## From the root of the fprime project
 ### /fprime-nucleo_h723zg-freertos-reference/settings.ini
@@ -229,13 +230,75 @@ register_fprime_config(
 set_arduino_build_settings()
 ```
 - This function is run which determines the settings/flags for the compiler and linker
-- Uses ARDUINO_FQBN set in /fprime-featherm4-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake to retrieve board build configurations specific to nucle_h723zg and make it available to the entire cmake build system
-- This is likely the function that retrieves all of the compiler flags provided from stm32duino in order to use them in the fprime project
+- Uses ARDUINO_FQBN set in /fprime-featherm4-freertos-reference/lib/fprime-featherm4-freertos/cmake/toolchain/FeatherM4_FreeRTOS.cmake to retrieve board build configurations specific to nucleo_h723zg and make it available to the entire cmake build system
+- The variables listed in this function stores compiler flags and general compiler information 
 
 ```sh
 include("${CMAKE_CURRENT_LIST_DIR}/arduino-wrapper.cmake")
 ```
 - Targets a cmake file to provide more arduino cmake functions
+
+### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/Arduino/Os/CMakeLists.txt
+```sh
+register_os_implementation("Console" Arduino)
+register_os_implementation("RawTime" Arduino)
+```
+- Allows Console.cpp and Console.hpp, which is in the same directory as this cmake file, to be represented as the implementation Os_Console_Arduino
+- Allows RawTime.cpp and RawTime.hpp, which is also in the same directory as this cmake file, to be represented as implementation Os_Console_RawTime
+- Both of these implementations are used in fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/platform/arm/Platform/CMakeLists.txt and fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/cmake/platform/arm/Platform/CMakeLists.txt
+- Os_Console_Arduino provides basic stub implementation for console interaction like printing messages
+- Os_RawTime_Arduino provides features for time, such as retrieving the current time and calculating time intervals
+
+### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/Arduino/Drv/StreamDriver/CMakeLists.txt
+```sh
+set(SOURCE_FILES
+  "${CMAKE_CURRENT_LIST_DIR}/StreamDriver.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/StreamDriver.cpp"
+  "${CMAKE_CURRENT_LIST_DIR}/StreamDriverArduino.cpp"
+)
+
+register_fprime_module()
+```
+- Converts StreamDriver.fpp, StreamDriver.cpp, and StreamDriverArduino.cpp into a single library called StreamDriver
+- This library provides a way to facilitate a stream of communication between the device and the flight software where the communication goes both ways
+
+### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/Arduino/Svc/ArduinoTime/CMakeLists.txt
+```sh
+set(SOURCE_FILES
+  "${CMAKE_CURRENT_LIST_DIR}/ArduinoTime.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/ArduinoTime.cpp"
+)
+target_use_arduino_libraries("TimeLib")
+
+register_fprime_module()
+```
+- Converts ArduinoTime.fpp and ArduinoTime.cpp into a single library called ArduinoTime. This library provides a time service, such as retrieving time and setting time intervals
+- target_use_arduino_libraries(“TimeLib”): Includes libraries that ArduinoTime most likely depends on to be implemented
+
+### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/Arduino/Drv/HardwareRateDriver/CMakeLists.txt
+```sh
+set(SOURCE_FILES
+  "${CMAKE_CURRENT_LIST_DIR}/HardwareRateDriver.fpp"
+  "${CMAKE_CURRENT_LIST_DIR}/HardwareRateDriver.cpp"
+)
+starts_with(IS_TEENSY "${ARDUINO_FQBN}" "teensy")
+starts_with(IS_ATMEGA "${ARDUINO_FQBN}" "MegaCore")
+
+# Check the Linux build
+if (NOT FPRIME_ARDUINO)
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/HardwareRateDriverLinux.cpp")
+elseif (IS_TEENSY)
+    target_use_arduino_libraries("IntervalTimer")
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/HardwareRateDriverTeensy.cpp")
+elseif (IS_ATMEGA)
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/../../../ATmega/vendor/libraries/TimerOne/TimerOne.cpp")
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/HardwareRateDriverAvr.cpp")
+else()
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/HardwareRateDriverBasic.cpp")
+endif()
+register_fprime_module()
+```
+- Converts HardwareRateDriver.fpp and HardwareRateDriver.cpp into a library called HardwareRateDriver. HardwareRateDriverBasic.cpp is also added to the library since FPRIME_ARDUINO is set to TRUE in arduino-support.cmake which is part of the build process, and ARDUINO_FQBN is based on stm, not teensy or MegaCore. This library provides a way to configure how frequently a rate group runs
 
 ### fprime-nucleo_h723zg-freertos-reference/lib/fprime-featherm4-freertos/fprime-arduino/cmake/toolchain/support/arduino-wrapper.cmake
 - Provides a list of arduino cmake functions
