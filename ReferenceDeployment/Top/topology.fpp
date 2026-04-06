@@ -21,7 +21,6 @@ module ReferenceDeployment {
     # ----------------------------------------------------------------------
 
     instance cmdDisp
-    instance comDriver
     instance eventManager
     instance rateDriver
     instance rateGroup1
@@ -55,25 +54,13 @@ module ReferenceDeployment {
       # Rate group 1
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
-      rateGroup1.RateGroupMemberOut[1] -> comDriver.schedIn
+      rateGroup1.RateGroupMemberOut[1] -> ComFprime.comDriver.schedIn
     }
 
     connections Communications {
       # Inputs to ComQueue (events, telemetry, file)
       eventManager.PktSend -> ComFprime.comQueue.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.EVENTS]
       tlmSend.PktSend     -> ComFprime.comQueue.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.TELEMETRY]
-
-      # ComDriver buffer allocations
-      comDriver.allocate      -> ComFprime.commsBufferManager.bufferGetCallee
-      comDriver.deallocate    -> ComFprime.commsBufferManager.bufferSendIn
-      
-      # ComDriver <-> ComStub (Uplink)
-      comDriver.$recv                     -> ComFprime.comStub.drvReceiveIn
-      ComFprime.comStub.drvReceiveReturnOut -> comDriver.recvReturnIn
-      
-      # ComStub <-> ComDriver (Downlink)
-      ComFprime.comStub.drvSendOut      -> comDriver.$send
-      comDriver.ready         -> ComFprime.comStub.drvConnected
 
       # Router <-> CmdDispatcher
       ComFprime.fprimeRouter.commandOut  -> cmdDisp.seqCmdBuff
