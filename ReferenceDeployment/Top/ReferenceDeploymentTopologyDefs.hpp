@@ -10,8 +10,20 @@
 #include "ReferenceDeployment/Top/FppConstantsAc.hpp"
 
 #include "Svc/Subtopologies/ComFprime/SubtopologyTopologyDefs.hpp"
-#include "Svc/Subtopologies/ComFprime/Ports_ComPacketQueueEnumAc.hpp"
 #include "Svc/Subtopologies/ComFprime/Ports_ComBufferQueueEnumAc.hpp"
+#include "Svc/Subtopologies/ComFprime/Ports_ComPacketQueueEnumAc.hpp"
+
+// ComFprime subtopology configuration phases expect these support objects
+// to be provided by the deployment.
+namespace ComFprime {
+    namespace Detector {
+        extern Svc::FrameDetectors::FprimeFrameDetector frameDetector;
+    }
+
+    namespace BufferManagerBins {
+        extern Svc::BufferManager::BufferBins bins;
+    }
+}
 
 /**
  * \brief required ping constants

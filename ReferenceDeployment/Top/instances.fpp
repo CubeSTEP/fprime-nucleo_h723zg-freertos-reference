@@ -38,8 +38,6 @@ module ReferenceDeployment {
 
   instance rateGroup1: Svc.PassiveRateGroup base id 0x1000
 
-  instance comDriver: Arduino.StreamDriver base id 0x4000
-
   instance timeHandler: Arduino.ArduinoTime base id 0x4400
 
   instance rateGroupDriver: Svc.RateGroupDriver base id 0x4500
@@ -48,4 +46,5 @@ module ReferenceDeployment {
 
   instance rateDriver: Arduino.HardwareRateDriver base id 0x4900
 
+  instance comDriver: Arduino.StreamDriver base id 0x4000
 }

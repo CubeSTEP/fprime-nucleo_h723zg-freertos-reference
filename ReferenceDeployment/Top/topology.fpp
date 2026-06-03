@@ -11,17 +11,16 @@ module ReferenceDeployment {
   topology ReferenceDeployment {
 
     # ----------------------------------------------------------------------
-    # Subtopology imports
+    # Subtopology instances
     # ----------------------------------------------------------------------
 
-    import ComFprime.Subtopology
+    instance ComFprime.Subtopology
 
     # ----------------------------------------------------------------------
     # Instances used in the topology
     # ----------------------------------------------------------------------
 
     instance cmdDisp
-    instance comDriver
     instance eventManager
     instance rateDriver
     instance rateGroup1
@@ -29,6 +28,7 @@ module ReferenceDeployment {
     instance textLogger
     instance timeHandler
     instance tlmSend
+    instance comDriver
 
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
@@ -56,28 +56,27 @@ module ReferenceDeployment {
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> comDriver.schedIn
+      rateGroup1.RateGroupMemberOut[2] -> ComFprime.Subtopology.comQueueRun
     }
-
+    
     connections Communications {
-      # Inputs to ComQueue (events, telemetry, file)
-      eventManager.PktSend -> ComFprime.comQueue.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.EVENTS]
-      tlmSend.PktSend     -> ComFprime.comQueue.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.TELEMETRY]
-
       # ComDriver buffer allocations
-      comDriver.allocate      -> ComFprime.commsBufferManager.bufferGetCallee
-      comDriver.deallocate    -> ComFprime.commsBufferManager.bufferSendIn
-      
-      # ComDriver <-> ComStub (Uplink)
-      comDriver.$recv                     -> ComFprime.comStub.drvReceiveIn
-      ComFprime.comStub.drvReceiveReturnOut -> comDriver.recvReturnIn
-      
-      # ComStub <-> ComDriver (Downlink)
-      ComFprime.comStub.drvSendOut      -> comDriver.$send
-      comDriver.ready         -> ComFprime.comStub.drvConnected
+      comDriver.allocate   -> ComFprime.Subtopology.commsBufferGetCallee
+      comDriver.deallocate -> ComFprime.Subtopology.commsBufferSendIn
+
+      # ComDriver <-> ComStub
+      comDriver.$recv                           -> ComFprime.Subtopology.drvReceiveIn
+      ComFprime.Subtopology.drvReceiveReturnOut -> comDriver.recvReturnIn
+      ComFprime.Subtopology.drvSendOut          -> comDriver.$send
+      comDriver.ready                           -> ComFprime.Subtopology.drvConnected
+
+      # Events and telemetry to ComQueue
+      eventManager.PktSend -> ComFprime.Subtopology.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.EVENTS]
+      tlmSend.PktSend     -> ComFprime.Subtopology.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.TELEMETRY]
 
       # Router <-> CmdDispatcher
-      ComFprime.fprimeRouter.commandOut  -> cmdDisp.seqCmdBuff
-      cmdDisp.seqCmdStatus     -> ComFprime.fprimeRouter.cmdResponseIn
+      ComFprime.Subtopology.commandOut -> cmdDisp.seqCmdBuff
+      cmdDisp.seqCmdStatus             -> ComFprime.Subtopology.cmdResponseIn
     }
 
     connections ReferenceDeployment {

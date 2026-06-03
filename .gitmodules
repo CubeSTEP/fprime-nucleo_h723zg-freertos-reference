@@ -1,6 +1,7 @@
 [submodule "fprime"]
 	path = lib/fprime
 	url = https://github.com/nasa/fprime.git
-[submodule "fprime-featherm4-freertos"]
-	path = lib/fprime-featherm4-freertos
-        url = https://github.com/CubeSTEP/fprime-featherm4-freertos.git
+[submodule "lib/fprime-nucleo_h723zg-freertos"]
+	path = lib/fprime-nucleo_h723zg-freertos
+	url = https://github.com/CubeSTEP/fprime-nucleo_h723zg-freertos.git
+	branch = STM32H7-4.2
