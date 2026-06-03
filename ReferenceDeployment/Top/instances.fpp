@@ -18,7 +18,7 @@ module ReferenceDeployment {
     stack size (6 * 1024) \
     priority 101
 
-  instance eventManager: Svc.ActiveLogger base id 0x0300 \
+  instance eventManager: Svc.EventManager base id 0x0300 \
     queue size 8 \
     stack size Default.STACK_SIZE \
     priority 102
@@ -46,4 +46,5 @@ module ReferenceDeployment {
 
   instance rateDriver: Arduino.HardwareRateDriver base id 0x4900
 
+  instance comDriver: Arduino.StreamDriver base id 0x4000
 }

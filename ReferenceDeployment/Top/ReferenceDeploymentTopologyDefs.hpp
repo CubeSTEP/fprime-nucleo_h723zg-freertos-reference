@@ -10,6 +10,7 @@
 #include "ReferenceDeployment/Top/FppConstantsAc.hpp"
 
 #include "Svc/Subtopologies/ComFprime/SubtopologyTopologyDefs.hpp"
+#include "Svc/Subtopologies/ComFprime/Ports_ComBufferQueueEnumAc.hpp"
 #include "Svc/Subtopologies/ComFprime/Ports_ComPacketQueueEnumAc.hpp"
 
 // ComFprime subtopology configuration phases expect these support objects

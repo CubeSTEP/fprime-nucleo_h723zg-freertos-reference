@@ -13,6 +13,7 @@ set(SOURCE_FILES
 )
 set(MOD_DEPS
   Fw/Logger
+  Svc/Subtopologies/ComFprime
   Arduino/Drv/StreamDriver
 )
 

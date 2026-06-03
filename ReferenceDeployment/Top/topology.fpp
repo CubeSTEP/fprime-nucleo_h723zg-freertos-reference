@@ -11,10 +11,10 @@ module ReferenceDeployment {
   topology ReferenceDeployment {
 
     # ----------------------------------------------------------------------
-    # Subtopology imports
+    # Subtopology instances
     # ----------------------------------------------------------------------
 
-    import ComFprime.Subtopology
+    instance ComFprime.Subtopology
 
     # ----------------------------------------------------------------------
     # Instances used in the topology
@@ -28,6 +28,7 @@ module ReferenceDeployment {
     instance textLogger
     instance timeHandler
     instance tlmSend
+    instance comDriver
 
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
@@ -54,17 +55,28 @@ module ReferenceDeployment {
       # Rate group 1
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
-      rateGroup1.RateGroupMemberOut[1] -> ComFprime.comDriver.schedIn
+      rateGroup1.RateGroupMemberOut[1] -> comDriver.schedIn
+      rateGroup1.RateGroupMemberOut[2] -> ComFprime.Subtopology.comQueueRun
     }
-
+    
     connections Communications {
-      # Inputs to ComQueue (events, telemetry, file)
-      eventManager.PktSend -> ComFprime.comQueue.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.EVENTS]
-      tlmSend.PktSend     -> ComFprime.comQueue.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.TELEMETRY]
+      # ComDriver buffer allocations
+      comDriver.allocate   -> ComFprime.Subtopology.commsBufferGetCallee
+      comDriver.deallocate -> ComFprime.Subtopology.commsBufferSendIn
+
+      # ComDriver <-> ComStub
+      comDriver.$recv                           -> ComFprime.Subtopology.drvReceiveIn
+      ComFprime.Subtopology.drvReceiveReturnOut -> comDriver.recvReturnIn
+      ComFprime.Subtopology.drvSendOut          -> comDriver.$send
+      comDriver.ready                           -> ComFprime.Subtopology.drvConnected
+
+      # Events and telemetry to ComQueue
+      eventManager.PktSend -> ComFprime.Subtopology.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.EVENTS]
+      tlmSend.PktSend     -> ComFprime.Subtopology.comPacketQueueIn[ComFprime.Ports_ComPacketQueue.TELEMETRY]
 
       # Router <-> CmdDispatcher
-      ComFprime.fprimeRouter.commandOut  -> cmdDisp.seqCmdBuff
-      cmdDisp.seqCmdStatus     -> ComFprime.fprimeRouter.cmdResponseIn
+      ComFprime.Subtopology.commandOut -> cmdDisp.seqCmdBuff
+      cmdDisp.seqCmdStatus             -> ComFprime.Subtopology.cmdResponseIn
     }
 
     connections ReferenceDeployment {
