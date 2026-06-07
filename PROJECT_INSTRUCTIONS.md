@@ -120,3 +120,27 @@ source ~/.zshrc
 ```
 
 - Follow from the rest of Step 5 onwards
+
+- Install st-flash 
+```bash
+brew install st-flash
+```
+
+- To Flash the board
+```bash
+st-flash write build-fprime-automatic-nucleo_H723ZG_FreeRTOS/bin/nucleo_H723ZG_FreeRTOS/ReferenceDeployment.elf.bin 0x08000000 
+```
+
+- To connect to GDS Determine the connected port
+```bash
+ls /dev/cu.*
+```
+
+- Then run fprime-gds with the appropriate port for instance
+
+```bash
+fprime-gds -n --dictionary build-artifacts/nucleo_H723ZG_FreeRTOS/ReferenceDeployment/dict/ReferenceDeploymentTopologyDictionary.json --communication-selection uart --uart-device /dev/cu.usbmodem2103 --uart-baud 115200 --framing-selection fprime
+```
+
+# Notes
+- STM32Duino has a default configuration for configMAX_PRIORITIES = 7 incorrect priority assignments can cause the system to crash. 
