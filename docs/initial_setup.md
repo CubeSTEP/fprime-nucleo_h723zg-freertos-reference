@@ -34,19 +34,14 @@ git submodule update --recursive --init
 brew install python3
 ```
 
-## General Instructions
-
-Create a virtual environment in the main project directory
-
-```sh
-# In fprime-nucleo_h723zg_freertos_reference
-python3 -m venv fprime-venv
-```
-
 ## 4. Activate the virtual environment
 
 ```sh
 # In fprime-nucleo_h723zg_freertos_reference
+
+# Create a virtual environment in the main project directory
+python3 -m venv fprime-venv
+
 # Linux, MacOS, & Windows WSL
 source fprime-venv/bin/activate
 ```
@@ -57,8 +52,8 @@ With the virtual environment activated, install the requirements
 # In fprime-nucleo_h723zg_freertos_reference (fprime-venv)
 pip install -r lib/fprime/requirements.txt
 ```
-
-# # Install arduino-cli
+<br></br>
+# Install arduino-cli
 
 ## Linux/Windows WSL
 ```sh
@@ -94,7 +89,7 @@ arduino-cli lib install "STM32duino FreeRTOS"
 
 arduino-cli lib install "Time"
 ```
-
+<br></br>
 # Install the STM32 CubeProgrammer
 - Visit the following webpage [STM32 CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html) and download the appropriate version for your operating system.
 

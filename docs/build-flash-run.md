@@ -17,39 +17,15 @@ fprime-util generate
 fprime-util build
 ```
 
-## 2.1 Flashing the Board
+## 2. Flashing the Board (OS-agnostic)
 
 ```sh
 # In fprime-nucleo_h723zg_freertos_reference (fprime-venv)
-
-# General Command 
 STM32_Programmer_CLI -c port=SWD -w build-artifacts/nucleo_H723ZG_FreeRTOS/ReferenceDeployment/bin/ReferenceDeployment.elf.hex -v -rst
-
-
-# Linux/Windows WSL (has only been tested with ubuntu 22.04)
-sh ~/.arduino15/packages/STMicroelectronics/tools/STM32Tools/2.4.0/stm32CubeProg.sh -i swd -f build-artifacts/nucleo_H723ZG_FreeRTOS/ReferenceDeployment/bin/ReferenceDeployment.elf.hex -c /dev/ttyAMC0
-
-# MacOS
-sh ~/Library/Arduino15/packages/STMicroelectronics/tools/STM32Tools/2.4.0/stm32CubeProg.sh -i swd -f build-artifacts/nucleo_H723ZG_FreeRTOS/ReferenceDeployment/bin/ReferenceDeployment.elf.hex -c /dev/cu.usbmodem142101
 ```
 
 > [!Note]
 > For Linux/WSL, /dev/ttyACM0 might not be the correct port. The correct port can be found with the following command: `ls -l /dev/tty*`. As for MacOS `/dev/cu.usbmodem142101` will likely need to be replaced with the correct port. This can be found by running the following command: `ls -l /dev/cu.usb*`
-
-## 2.2 Possible Issues with Flashing for Ubuntu
-This error might print out when running the flash command. This will require some changes to the shell script stm32CubeProg.sh.
-```sh
-STM32CubeProgrammer not found (STM32_Programmer.sh)
-    Please install it or add '<STM32CubeProgrammer path>/bin' to your PATH environment
-```
-1. First, go to ~/.arduino15/packages/STMicroelectronics/tools/STM32Tools/2.4.0/stm32CubeProg.sh to edit the file. Remove this line of code.
-```sh
-export PATH="$HOME/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin":"$PATH
-```
-2. After removing the command, replace it with the line displayed below. Switch out {name} for the appropriate name. The error was that $HOME in the shell script did not provide the right path.
-```sh
-export PATH="home/{name}/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin":"$PATH
-```
 
 ## 3.1 Running the Deployment with F' GDS
 
@@ -80,9 +56,5 @@ sudo chmod 777 /dev/ttyACM0
 sudo chomd 777 /dev/cu.usbmodem12345
 ```
 
-## Any Issues?
-Refer to the [additional resources][additional-resources] section in the main README file for potential fixes.
-
 <!-- Links -->
 [board-list]: ../additional-resources/board-list.md
-[additional-resources]: ../../README.md#additional-resources
