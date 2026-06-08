@@ -98,21 +98,79 @@ arduino-cli lib install "Time"
 # Install the STM32 CubeProgrammer
 - Visit the following webpage [STM32 CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html) and download the appropriate version for your operating system.
 
-- STM32 Programmer CLI will be installed at the following locations depending on the operating system that you are using:
+- STM32 Programmer CLI will be installed at a location similar to one of the following paths depending on your operating system:
 
 ```sh
-macOS x86_64: STM32CubeProgrammer.app/Contents/MacOs/bin/STM32_Programmer_CLI
-macOS aarch64: STM32CubeProgrammer.app/Contents/Resources/bin/STM32_Programmer_CLI
-Windows: ..\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe
-Linux: ../STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI
+macOS: /Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/Resources/bin/STM32_Programmer_CLI
+Windows: C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin\STM32_Programmer_CLI.exe
+Linux: $HOME/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI
 ```
 
-- Add the STM32 Programmer CLI to your system path. For example, on Linux you can add the following line to your .bashrc or .zshrc file:
-```bash
-# General syntax: export PATH="/path/to/STM32CubeProgrammer/bin:\$PATH"
-export PATH="\(HOME/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin:\)PATH"
+- Add the directory containing `STM32_Programmer_CLI` to your system path. Do not add the executable file itself.
+
+General shell syntax:
+
+```sh
+export PATH="/path/to/STM32CubeProgrammer/bin:$PATH"
 ```
-[!NOTE] Make sure to have the path for the bin of the programmer in the location where is installed on your machine. 
+
+macOS example:
+
+```sh
+export PATH="/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/Resources/bin:$PATH"
+```
+
+Apple Silicon macOS zsh example:
+
+```sh
+export PATH="/Applications/STMicroelectronics/STM32Cube/STM32CubeProgrammer/STM32CubeProgrammer.app/Contents/Resources/bin:$PATH"
+
+if [[ "$(uname -m)" == "arm64" ]]; then
+  alias STM32_Programmer_CLI='arch -x86_64 STM32_Programmer_CLI'
+fi
+```
+
+Linux example:
+
+```bash
+export PATH="$HOME/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin:$PATH"
+```
+
+Windows PowerShell example:
+
+```powershell
+$env:Path += ";C:\Program Files\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin"
+```
+
+To make the change persistent on Linux or macOS, add the matching `export PATH=...` line to your shell startup file:
+
+```sh
+# zsh
+echo 'export PATH="/path/to/STM32CubeProgrammer/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# bash
+echo 'export PATH="/path/to/STM32CubeProgrammer/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Verify the CLI is available:
+
+```sh
+STM32_Programmer_CLI --version
+```
+
+On Apple Silicon macOS, if the command prints `Incompatible processor` with a `neon` message, use the zsh alias above or run the CLI through Rosetta manually:
+
+```sh
+arch -x86_64 STM32_Programmer_CLI --version
+```
+
+> [!NOTE]
+> Shell aliases work for commands typed in an interactive terminal. Scripts that call `STM32_Programmer_CLI` directly may still need to run through Rosetta or use a wrapper script.
+
+> [!NOTE]
+> Make sure the path points to the `bin` directory where STM32 CubeProgrammer is installed on your machine.
 
 # Next Steps: [Building, Flashing, and Running the Deployment][build-flash-run]
 
