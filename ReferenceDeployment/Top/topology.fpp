@@ -56,7 +56,7 @@ module ReferenceDeployment {
       rateGroupDriver.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1.CycleIn
       rateGroup1.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1.RateGroupMemberOut[1] -> comDriver.schedIn
-      rateGroup1.RateGroupMemberOut[2] -> ComFprime.Subtopology.comQueueRun
+      rateGroup1.RateGroupMemberOut[2] -> ComFprime.comQueue.run
     }
     
     connections Communications {

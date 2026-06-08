@@ -19,6 +19,7 @@
     cd ../fprime-featherm4-freertos/fprime-arduino
     pip install -r requirements.txt
     ```
+
 5. Install all these arduino-cli related code
     ```sh
     cd ../../..
@@ -34,6 +35,8 @@
     arduino-cli core update-index
     
     arduino-cli core install STMicroelectronics:stm32
+
+    arduino-cli lib install "STM32duino FreeRTOS Time"
     ```
 6. Run fprime-util generate
     ```sh
@@ -95,3 +98,49 @@ For Ubuntu, run this command.
 sudo chmod 666 /dev/ttyACM0
 ```
 Afterwards, run the fprime-gds command again. For other OSes, you must run a command that elevates the permission for the folder representing the board connection.
+
+
+# Project Setup MacOS
+
+- Follow up to Step 4
+
+- Install Homebrew see guide: [Home Brew](https://brew.sh/)
+
+- Install arduino-cli
+```sh
+brew install arduino-cli
+```
+
+-  Add arduino-cli to path
+```sh
+echo 'fpath=(/opt/homebrew/share/zsh/site-functions $fpath)' >> ~/.zshrc
+echo 'autoload -Uz compinit && compinit' >> ~/.zshrc
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+- Follow from the rest of Step 5 onwards
+
+- Install st-flash 
+```bash
+brew install st-flash
+```
+
+- To Flash the board
+```bash
+st-flash write build-fprime-automatic-nucleo_H723ZG_FreeRTOS/bin/nucleo_H723ZG_FreeRTOS/ReferenceDeployment.elf.bin 0x08000000 
+```
+
+- To connect to GDS Determine the connected port
+```bash
+ls /dev/cu.*
+```
+
+- Then run fprime-gds with the appropriate port for instance
+
+```bash
+fprime-gds -n --dictionary build-artifacts/nucleo_H723ZG_FreeRTOS/ReferenceDeployment/dict/ReferenceDeploymentTopologyDictionary.json --communication-selection uart --uart-device /dev/cu.usbmodem2103 --uart-baud 115200 --framing-selection fprime
+```
+
+# Notes
+- STM32Duino has a default configuration for configMAX_PRIORITIES = 7 incorrect priority assignments can cause the system to crash. 
