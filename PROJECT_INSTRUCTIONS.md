@@ -14,15 +14,10 @@
     cd lib/fprime
     pip install -r requirements.txt
     ```
-4. Install requirements.txt in fprime-arduino
-    ```sh
-    cd ../fprime-featherm4-freertos/fprime-arduino
-    pip install -r requirements.txt
-    ```
 
-5. Install all these arduino-cli related code
+4. Install all these arduino-cli related code
     ```sh
-    cd ../../..
+    cd ../..
 
     curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=$VIRTUAL_ENV/bin sh
 
@@ -36,19 +31,16 @@
     
     arduino-cli core install STMicroelectronics:stm32
 
-    arduino-cli lib install "STM32duino FreeRTOS Time"
+    arduino-cli lib install "STM32duino FreeRTOS"
+
+    arduino-cli lib install "Time"
     ```
-6. Run fprime-util generate
+5. Run fprime-util generate
     ```sh
     fprime-util generate
     ```
 
-7. Run script
-    ```sh
-    ./fix.sh
-    ```
-
-8. Run the build command 
+6. Run the build command 
     ```sh
     fprime-util build
     ```
