@@ -7,6 +7,7 @@
 #include <ReferenceDeployment/Top/ReferenceDeploymentTopologyAc.hpp>
 // Note: Uncomment when using Svc:TlmPacketizer
 // #include <ReferenceDeployment/Top/ReferenceDeploymentPacketsAc.hpp>
+#include <Arduino/config/FprimeArduino.hpp>
 #include <config/FppConstantsAc.hpp>
 
 // Allows easy reference to objects in FPP/autocoder required namespaces
@@ -42,6 +43,9 @@ void configureTopology() {
 
     // Rate groups require context arrays.
     rateGroup1.configure(rateGroup1Context, FW_NUM_ARRAY_ELEMENTS(rateGroup1Context));
+
+    // Bind the byte stream driver to the Nucleo virtual serial port used by the GDS.
+    comDriver.configure(&Serial);
 }
 
 // Public functions for use in main program are namespaced with deployment name ReferenceDeployment
