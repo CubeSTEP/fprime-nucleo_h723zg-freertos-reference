@@ -1,10 +1,10 @@
 ####
-# This sets up the build system for the 'fprime-featherm4-freertos-reference' project, including
+# This sets up the build system for the 'fprime-nucleo_h723zg-freertos-reference' project, including
 # components and deployments from project.cmake. In addition, it imports the core F Prime components.
 ####
 
 cmake_minimum_required(VERSION 3.13)
-project(fprime-featherm4-freertos-reference C CXX)        
+project(fprime-nucleo_h723zg-freertos-reference C CXX)        
 
 ###
 # F' Core Setup
