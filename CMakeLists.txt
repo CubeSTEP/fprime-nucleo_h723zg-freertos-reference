@@ -6,11 +6,15 @@
 cmake_minimum_required(VERSION 3.13)
 project(fprime-nucleo_h723zg-freertos-reference C CXX)        
 
+# Disable GTEST install for Arduino Target, Conflicts with fprime_arudino_libraries
+set(INSTALL_GTEST OFF CACHE BOOL "Disable installing embedded GoogleTest." FORCE)
+
 ###
 # F' Core Setup
 # This includes all of the F prime core components, and imports the make-system.
 ###
 include("${CMAKE_CURRENT_LIST_DIR}/lib/fprime/cmake/FPrime.cmake")
+
 # NOTE: register custom targets between these two lines
 fprime_setup_included_code()
 

@@ -22,6 +22,7 @@ module ReferenceDeployment {
 
     instance cmdDisp
     instance eventManager
+    instance fatalHandler
     instance rateDriver
     instance rateGroup1
     instance rateGroupDriver
@@ -30,6 +31,9 @@ module ReferenceDeployment {
     instance tlmSend
     instance comDriver
 
+    instance lifeLedLD1
+    instance lifeLedLD2
+    instance lifeLedLD3
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
     # ----------------------------------------------------------------------
@@ -59,6 +63,10 @@ module ReferenceDeployment {
       rateGroup1.RateGroupMemberOut[2] -> ComFprime.comQueue.run
     }
     
+    connections FaultHandler {
+      eventManager.FatalAnnounce -> fatalHandler.FatalReceive
+    }
+
     connections Communications {
       # ComDriver buffer allocations
       comDriver.allocate   -> ComFprime.Subtopology.commsBufferGetCallee
@@ -80,7 +88,10 @@ module ReferenceDeployment {
     }
 
     connections ReferenceDeployment {
-      # Add here connections to user-defined components
+      # Life LED
+      rateGroup1.RateGroupMemberOut[Ports_RateGroups.rateGroup1] -> lifeLedLD1.run  
+      rateGroup1.RateGroupMemberOut[Ports_RateGroups.rateGroup1] -> lifeLedLD2.run
+      rateGroup1.RateGroupMemberOut[Ports_RateGroups.rateGroup1] -> lifeLedLD3.run
     }
 
   }
