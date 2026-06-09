@@ -41,8 +41,6 @@ module ReferenceDeployment {
         @ Enables telemetry channels handling
         import Fw.Channel
 
-        import Svc.Sched
-
         @ Port to return the value of a parameter
         param get port prmGetOut
 
