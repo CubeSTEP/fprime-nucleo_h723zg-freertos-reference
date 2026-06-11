@@ -38,13 +38,17 @@ module ReferenceDeployment {
 
   instance rateGroup1: Svc.PassiveRateGroup base id 0x1000
 
-  instance timeHandler: Arduino.ArduinoTime base id 0x4400
+  instance timeHandler: Arduino.ArduinoTime base id 0x4000
 
-  instance rateGroupDriver: Svc.RateGroupDriver base id 0x4500
+  instance rateGroupDriver: Svc.RateGroupDriver base id 0x4100
 
-  instance textLogger: Svc.PassiveTextLogger base id 0x4600
+  instance textLogger: Svc.PassiveTextLogger base id 0x4200
 
-  instance rateDriver: Arduino.HardwareRateDriver base id 0x4900
+  instance rateDriver: Arduino.HardwareRateDriver base id 0x4300
 
-  instance comDriver: Arduino.StreamDriver base id 0x4000
+  instance comDriver: Arduino.StreamDriver base id 0x4400
+
+  instance fatalHandler: STM32H7_FreeRTOS.STM32H7FatalHandler base id 0x4500
+
+  instance systemResources: Svc.SystemResources base id 0x4600
 }
