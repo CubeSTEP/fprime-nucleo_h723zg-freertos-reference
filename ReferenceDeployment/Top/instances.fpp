@@ -51,10 +51,4 @@ module ReferenceDeployment {
   instance fatalHandler: STM32H7_FreeRTOS.STM32H7FatalHandler base id 0x4500
 
   instance systemResources: Svc.SystemResources base id 0x4600
-
-  instance lifeLedLD1: Arduino.LifeLed base id 0x4700
-
-  instance lifeLedLD2: Arduino.LifeLed base id 0x4800
-
-  instance lifeLedLD3: Arduino.LifeLed base id 0x4900
 }

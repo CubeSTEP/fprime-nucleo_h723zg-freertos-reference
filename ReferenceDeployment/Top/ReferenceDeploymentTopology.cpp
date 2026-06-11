@@ -9,11 +9,6 @@
 // #include <ReferenceDeployment/Top/ReferenceDeploymentPacketsAc.hpp>
 #include <Arduino/config/FprimeArduino.hpp>
 #include <config/FppConstantsAc.hpp>
-#include <BasicTypes.h>
-
-constexpr U32 PB0 = 16;
-constexpr U32 PB14 = 30;
-constexpr U32 PB15 = 29;
 
 // Allows easy reference to objects in FPP/autocoder required namespaces
 using namespace ReferenceDeployment;
@@ -51,11 +46,6 @@ void configureTopology() {
 
     // Bind the byte stream driver to the Nucleo virtual serial port used by the GDS.
     comDriver.configure(&Serial);
-
-    // Configure the life LED components with the appropriate pin numbers. 
-    lifeLedLD1.configure(PB0);
-    lifeLedLD2.configure(PB14);
-    lifeLedLD3.configure(PB15);
 }
 
 // Public functions for use in main program are namespaced with deployment name ReferenceDeployment

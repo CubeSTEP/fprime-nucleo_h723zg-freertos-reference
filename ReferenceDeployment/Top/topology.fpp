@@ -31,9 +31,6 @@ module ReferenceDeployment {
     instance tlmSend
     instance comDriver
 
-    instance lifeLedLD1
-    instance lifeLedLD2
-    instance lifeLedLD3
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
     # ----------------------------------------------------------------------
@@ -88,10 +85,6 @@ module ReferenceDeployment {
     }
 
     connections ReferenceDeployment {
-      # Life LED
-      rateGroup1.RateGroupMemberOut[Ports_RateGroups.rateGroup1] -> lifeLedLD1.run  
-      rateGroup1.RateGroupMemberOut[Ports_RateGroups.rateGroup1] -> lifeLedLD2.run
-      rateGroup1.RateGroupMemberOut[Ports_RateGroups.rateGroup1] -> lifeLedLD3.run
     }
 
   }
